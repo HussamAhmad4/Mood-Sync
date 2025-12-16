@@ -97,6 +97,8 @@
     isLoading: false,
   };
 
+   let authMode = "login"; // "login" | "signup"
+
   // ---------- Utilities ----------
   function safeJsonParse(s, fallback) {
     try { return JSON.parse(s); } catch { return fallback; }
