@@ -54,5 +54,5 @@ This project was built using **HTML, CSS, and JavaScript only**, with a focus on
 
 ---
 
-## Project Structure
+
 
