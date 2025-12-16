@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mood Sync</title>
+  <link rel="preconnect" href="https://itunes.apple.com">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">♪</div>
+      <div>
+        <div class="brand-name">Mood Sync</div>
+        <div class="brand-sub">Mood-based playlists with previews</div>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button id="themeBtn" class="btn btn-ghost" type="button" aria-label="Toggle theme">
+        <span class="icon" aria-hidden="true">◐</span>
+        <span class="hide-sm">Theme</span>
+      </button>
+
+      <div id="userChip" class="userchip" hidden>
+        <span class="dot" aria-hidden="true"></span>
+        <span id="userChipName"></span>
+        <button id="logoutBtn" class="btn btn-ghost btn-sm" type="button">Logout</button>
+      </div>
+
+      <button id="openAuthBtn" class="btn btn-primary" type="button">
+        Login / Sign up
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO / PUBLIC VIEW -->
+    <section class="hero" id="heroSection">
+      <div class="hero-left">
+        <h1>Playlists that match your mood.</h1>
+        <p class="muted">
+          Mood Sync generates fresh 10-song playlists from a curated mood system, with audio previews you can play right on the site.
+          To use features (generate + share), create an account.
+        </p>
+
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-label">Playlists generated</div>
+            <div class="stat-value" id="globalCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Moods</div>
+            <div class="stat-value">7</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Playlist size</div>
+            <div class="stat-value">10</div>
+          </div>
+        </div>
+
+        <div class="hero-cta">
+          <button id="heroLoginBtn" class="btn btn-primary" type="button">Get started</button>
+          <button id="learnMoreBtn" class="btn btn-ghost" type="button">How it works</button>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="preview-card">
+          <div class="preview-title">What you’ll get</div>
+          <ul class="preview-list">
+            <li>✅ Fresh playlists each time</li>
+            <li>✅ No overlap between moods</li>
+            <li>✅ Audio previews + artwork</li>
+            <li>✅ Share playlists with a link</li>
+            <li>✅ Clean UI (dark/light)</li>
+          </ul>
+          <div class="tip muted">
+            Tip: your professor can test sharing by opening the share link in a new tab.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHARE VIEW (PUBLIC) -->
+    <section id="shareSection" class="panel" hidden>
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Shared playlist</h2>
+          <div class="muted" id="shareMeta"></div>
+        </div>
+        <div class="panel-actions">
+          <button id="backHomeBtn" class="btn btn-ghost" type="button">Back</button>
+        </div>
+      </div>
+
+      <div id="shareTracks" class="tracks"></div>
+    </section>
+
+    <!-- APP (LOGGED IN REQUIRED) -->
+    <section id="appSection" class="panel" hidden>
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Generate a playlist</h2>
+          <div class="muted">Pick a mood and get 10 fresh tracks with previews.</div>
+        </div>
+
+        <div class="panel-actions">
+          <div class="count-pill">
+            <span class="muted">Your generated playlists:</span>
+            <strong id="userCount">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="moods" role="tablist" aria-label="Mood selector">
+          <button class="mood" data-mood="happy" type="button">Happy</button>
+          <button class="mood" data-mood="sad" type="button">Sad</button>
+          <button class="mood" data-mood="chill" type="button">Chill</button>
+          <button class="mood" data-mood="mad" type="button">Mad</button>
+          <button class="mood" data-mood="hype" type="button">Hype</button>
+          <button class="mood" data-mood="sleep" type="button">Sleep</button>
+          <button class="mood" data-mood="focus" type="button">Focus</button>
+        </div>
+
+        <div class="actions-row">
+          <button id="generateBtn" class="btn btn-primary" type="button">
+            Generate playlist
+          </button>
+          <button id="shareBtn" class="btn btn-ghost" type="button" disabled>
+            Share this playlist
+          </button>
+          <button id="newBtn" class="btn btn-ghost" type="button" disabled>
+            New playlist (same mood)
+          </button>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+      </div>
+
+      <div class="panel-body">
+        <div class="playlist-head">
+          <div>
+            <div class="playlist-title" id="playlistTitle">No playlist yet</div>
+            <div class="muted" id="playlistSubtitle">Log in and generate your first playlist.</div>
+          </div>
+
+          <div class="sharebox" id="shareBox" hidden>
+            <div class="muted">Share link:</div>
+            <div class="sharelink">
+              <input id="shareLinkInput" type="text" readonly />
+              <button id="copyLinkBtn" class="btn btn-ghost btn-sm" type="button">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="tracks" class="tracks"></div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="howSection" class="panel" hidden>
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">How Mood Sync works</h2>
+          <div class="muted">
+            Built with HTML/CSS/JS. Music previews pulled from the iTunes Search API.
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button id="closeHowBtn" class="btn btn-ghost" type="button">Close</button>
+        </div>
+      </div>
+      <div class="panel-body prose">
+        <p>
+          Mood Sync generates playlists by querying a mood-specific set of keywords (example: “focus instrumental”, “sleep ambient”).
+          Results are shuffled and filtered so tracks don’t overlap across moods.
+        </p>
+        <p>
+          Reliability is handled with a fallback system:
+          <strong>(1)</strong> live API fetch,
+          <strong>(2)</strong> cached results saved locally (so the app keeps working even if the API is temporarily unavailable),
+          <strong>(3)</strong> offline demo fallback.
+        </p>
+        <p>
+          Authentication is implemented client-side using localStorage. Users must be logged in to generate and share playlists.
+          Shared playlists are viewable by anyone with a link.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="modal" aria-hidden="true" hidden>
+    <div class="modal-backdrop" data-close="true"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal-head">
+        <div>
+          <div id="authTitle" class="modal-title">Welcome to Mood Sync</div>
+          <div class="muted">Sign in to generate and share playlists.</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="closeAuthBtn" type="button">✕</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login" type="button">Login</button>
+        <button class="tab" data-tab="signup" type="button">Sign up</button>
+      </div>
+
+      <form id="loginForm" class="form" autocomplete="on">
+        <label>
+          Username
+          <input name="username" type="text" minlength="3" maxlength="24" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" minlength="4" maxlength="64" required />
+        </label>
+        <button class="btn btn-primary" type="submit">Login</button>
+        <div class="form-hint muted">Demo note: passwords are stored locally (class project).</div>
+      </form>
+
+      <form id="signupForm" class="form" hidden autocomplete="on">
+        <label>
+          Username
+          <input name="username" type="text" minlength="3" maxlength="24" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" minlength="4" maxlength="64" required />
+        </label>
+        <button class="btn btn-primary" type="submit">Create account</button>
+        <div class="form-hint muted">Your account stays in this browser (localStorage).</div>
+      </form>
+
+      <div id="authError" class="auth-error" hidden></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="muted">Mood Sync — frontend-only project (HTML/CSS/JS).</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
