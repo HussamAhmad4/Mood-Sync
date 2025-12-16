@@ -323,6 +323,11 @@ a{ color:inherit; }
 }
 .icon{ margin-right: 6px; }
 
+
+.userchip[hidden] {
+  display: none !important;
+}
+
 .userchip{
   display:flex; align-items:center; gap: 10px;
   border: 1px solid var(--border);
