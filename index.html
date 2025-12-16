@@ -209,31 +209,26 @@
         <button class="tab" data-tab="signup" type="button">Sign up</button>
       </div>
 
-      <form id="loginForm" class="form" autocomplete="on">
-        <label>
-          Username
-          <input name="username" type="text" minlength="3" maxlength="24" required />
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" minlength="4" maxlength="64" required />
-        </label>
-        <button class="btn btn-primary" type="submit">Login</button>
-        <div class="form-hint muted">note: passwords are stored locally.</div>
-      </form>
+      <form id="authForm" class="form" autocomplete="on">
+  <label>
+    Username
+    <input id="authUsername" type="text" minlength="3" maxlength="24" required />
+  </label>
 
-      <form id="signupForm" class="form" hidden autocomplete="on">
-        <label>
-          Username
-          <input name="username" type="text" minlength="3" maxlength="24" required />
-        </label>
-        <label>
-          Password
-          <input name="password" type="password" minlength="4" maxlength="64" required />
-        </label>
-        <button class="btn btn-primary" type="submit">Create account</button>
-        <div class="form-hint muted">Your account stays in this browser (localStorage).</div>
-      </form>
+  <label>
+    Password
+    <input id="authPassword" type="password" minlength="4" maxlength="64" required />
+  </label>
+
+  <button id="authSubmitBtn" class="btn btn-primary" type="submit">
+    Login
+  </button>
+
+  <div class="form-hint muted" id="authHint">
+    Passwords are stored locally (class project).
+  </div>
+</form>
+
 
       <div id="authError" class="auth-error" hidden></div>
     </div>
