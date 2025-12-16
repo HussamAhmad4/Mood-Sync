@@ -729,6 +729,8 @@
 
   // ---------- Init ----------
   function init() {
+    hide(els.userChip); // prevent Logout from showing before auth state loads
+
     loadTheme();
 
     // Seed counts display
