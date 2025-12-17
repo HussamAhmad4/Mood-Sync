@@ -81,8 +81,13 @@
 
     authModal: document.getElementById("authModal"),
     closeAuthBtn: document.getElementById("closeAuthBtn"),
-    loginForm: document.getElementById("loginForm"),
-    signupForm: document.getElementById("signupForm"),
+   
+    authForm: document.getElementById("authForm"),
+    authUsername: document.getElementById("authUsername"),
+    authPassword: document.getElementById("authPassword"),
+    authSubmitBtn: document.getElementById("authSubmitBtn"),
+    authHint: document.getElementById("authHint"),
+
     authError: document.getElementById("authError"),
     tabs: Array.from(document.querySelectorAll(".tab")),
   };
@@ -96,7 +101,6 @@
     servedTrackIdsByMood: new Map(), // mood -> Set
     isLoading: false,
   };
-
    let authMode = "login"; // "login" | "signup"
 
   // ---------- Utilities ----------
@@ -245,29 +249,41 @@
   }
 
   function openAuthModal() {
-    clearAuthError();
-    show(els.authModal);
-    els.authModal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
+  clearAuthError();
+  setAuthMode("login"); // reset to login every time modal opens
+  show(els.authModal);
+  els.authModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
 
   function closeAuthModal() {
     hide(els.authModal);
     els.authModal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
+   
+   function setAuthMode(mode) {
+  authMode = mode;
 
-  function setAuthTab(tab) {
-    els.tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
-    if (tab === "login") {
-      show(els.loginForm);
-      hide(els.signupForm);
-    } else {
-      hide(els.loginForm);
-      show(els.signupForm);
-    }
-    clearAuthError();
+  els.tabs.forEach(t =>
+    t.classList.toggle("active", t.dataset.tab === mode)
+  );
+
+  if (mode === "login") {
+    els.authSubmitBtn.textContent = "Login";
+    els.authHint.textContent =
+      "Welcome back. Enter your credentials to continue.";
+  } else {
+    els.authSubmitBtn.textContent = "Create account";
+    els.authHint.textContent =
+      "Create an account to generate and share playlists.";
   }
+
+  clearAuthError();
+}
+
+
 
   // ---------- Counts ----------
   function incGlobalCount() {
@@ -759,6 +775,37 @@
     els.openAuthBtn.addEventListener("click", openAuthModal);
     els.heroLoginBtn.addEventListener("click", openAuthModal);
 
+     // Auth tabs (login / signup)
+els.tabs.forEach(t => {
+  t.addEventListener("click", () => setAuthMode(t.dataset.tab));
+});
+setAuthMode("login");
+
+     // Auth form submit (login / signup)
+els.authForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  clearAuthError();
+
+  const username = els.authUsername.value.trim();
+  const password = els.authPassword.value;
+
+  const res =
+    authMode === "login"
+      ? login(username, password)
+      : signup(username, password);
+
+  if (!res.ok) {
+    authError(res.msg);
+    return;
+  }
+
+  els.authPassword.value = "";
+  closeAuthModal();
+  refreshUserUI();
+  routeFromHash();
+});
+
+
     // Auth modal close
     els.closeAuthBtn.addEventListener("click", closeAuthModal);
     els.authModal.addEventListener("click", (e) => {
@@ -766,41 +813,8 @@
       if (target && target.dataset && target.dataset.close === "true") closeAuthModal();
     });
 
-    // Tabs
-    els.tabs.forEach(t => {
-      t.addEventListener("click", () => setAuthTab(t.dataset.tab));
-    });
+   
 
-    // Forms
-    els.loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      clearAuthError();
-      const fd = new FormData(els.loginForm);
-      const username = String(fd.get("username") || "").trim();
-      const password = String(fd.get("password") || "");
-
-      const res = login(username, password);
-      if (!res.ok) { authError(res.msg); return; }
-
-      closeAuthModal();
-      refreshUserUI();
-      routeFromHash();
-    });
-
-    els.signupForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      clearAuthError();
-      const fd = new FormData(els.signupForm);
-      const username = String(fd.get("username") || "").trim();
-      const password = String(fd.get("password") || "");
-
-      const res = signup(username, password);
-      if (!res.ok) { authError(res.msg); return; }
-
-      closeAuthModal();
-      refreshUserUI();
-      routeFromHash();
-    });
 
     // Logout
     els.logoutBtn.addEventListener("click", () => {
